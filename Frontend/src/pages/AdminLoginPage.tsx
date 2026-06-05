@@ -6,10 +6,10 @@ export default function AdminLoginPage() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setError(null)
     setLoading(true)
@@ -19,7 +19,7 @@ export default function AdminLoginPage() {
       api.saveSession(data.token, data.email)
       navigate('/admin', { replace: true })
     } catch (err) {
-      setError(err.message)
+      setError((err as Error).message)
       setLoading(false)
     }
   }

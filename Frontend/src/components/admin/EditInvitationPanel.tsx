@@ -1,7 +1,19 @@
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { api } from '../../lib/api'
 
-const EMPTY = {
+type FormState = {
+  couple_names: string
+  event_date: string
+  event_time: string
+  venue_name: string
+  venue_address: string
+  story_blurb: string
+  hero_image_url: string
+}
+
+type Banner = { type: 'success' | 'error'; message: string }
+
+const EMPTY: FormState = {
   couple_names: '',
   event_date: '',
   event_time: '',
@@ -11,11 +23,23 @@ const EMPTY = {
   hero_image_url: '',
 }
 
+const inputClass =
+  'w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400'
+
+function Field({ label, children, className = '' }: { label: string; children: ReactNode; className?: string }) {
+  return (
+    <div className={className}>
+      <label className="block text-xs text-gray-500 uppercase tracking-wide mb-1">{label}</label>
+      {children}
+    </div>
+  )
+}
+
 export default function EditInvitationPanel() {
-  const [form, setForm] = useState(EMPTY)
+  const [form, setForm] = useState<FormState>(EMPTY)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [banner, setBanner] = useState(null) // { type: 'success'|'error', message }
+  const [banner, setBanner] = useState<Banner | null>(null)
 
   useEffect(() => {
     async function fetchContent() {
@@ -36,22 +60,22 @@ export default function EditInvitationPanel() {
     fetchContent()
   }, [])
 
-  function set(field, value) {
+  function set(field: keyof FormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
-  function showBanner(type, message) {
+  function showBanner(type: Banner['type'], message: string) {
     setBanner({ type, message })
     setTimeout(() => setBanner(null), 5000)
   }
 
-  async function handleSave(e) {
+  async function handleSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setSaving(true)
     try {
       await api.updateInvitation({
         couple_names: form.couple_names.trim(),
-        event_date: form.event_date || null,
+        event_date: form.event_date || undefined,
         event_time: form.event_time.trim(),
         venue_name: form.venue_name.trim(),
         venue_address: form.venue_address.trim(),
@@ -60,7 +84,7 @@ export default function EditInvitationPanel() {
       })
       showBanner('success', 'Invitation updated successfully.')
     } catch (err) {
-      showBanner('error', err.message)
+      showBanner('error', (err as Error).message)
     }
     setSaving(false)
   }
@@ -173,17 +197,5 @@ export default function EditInvitationPanel() {
         {saving ? 'Saving…' : 'Save Changes'}
       </button>
     </form>
-  )
-}
-
-const inputClass =
-  'w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400'
-
-function Field({ label, children, className = '' }) {
-  return (
-    <div className={className}>
-      <label className="block text-xs text-gray-500 uppercase tracking-wide mb-1">{label}</label>
-      {children}
-    </div>
   )
 }

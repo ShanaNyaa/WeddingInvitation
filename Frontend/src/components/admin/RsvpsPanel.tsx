@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { api } from '../../lib/api'
+import { api, RsvpGroup, RsvpTotals } from '../../lib/api'
 
 export default function RsvpsPanel() {
-  const [groups, setGroups] = useState([]) // [{ key, guests[] }]
+  const [groups, setGroups] = useState<RsvpGroup[]>([])
   const [loading, setLoading] = useState(true)
-  const [totals, setTotals] = useState({ registered: 0, capacity: 0 })
+  const [totals, setTotals] = useState<RsvpTotals>({ registered: 0, capacity: 0 })
 
   useEffect(() => {
     async function fetchData() {

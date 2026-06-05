@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
-import { api } from '../../lib/api'
+import { api, InviteKey } from '../../lib/api'
+
+type Banner = { type: 'success' | 'error'; message: string }
 
 export default function InviteKeysPanel() {
-  const [keys, setKeys] = useState([])
+  const [keys, setKeys] = useState<InviteKey[]>([])
   const [loading, setLoading] = useState(true)
   const [familyName, setFamilyName] = useState('')
   const [seatLimit, setSeatLimit] = useState('')
   const [creating, setCreating] = useState(false)
-  const [banner, setBanner] = useState(null) // { type: 'success'|'error', message }
-  const [confirmDelete, setConfirmDelete] = useState(null) // key id
+  const [banner, setBanner] = useState<Banner | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
 
   async function fetchKeys() {
     try {
@@ -20,12 +22,12 @@ export default function InviteKeysPanel() {
 
   useEffect(() => { fetchKeys() }, [])
 
-  function showBanner(type, message) {
+  function showBanner(type: Banner['type'], message: string) {
     setBanner({ type, message })
     setTimeout(() => setBanner(null), 6000)
   }
 
-  async function handleCreate(e) {
+  async function handleCreate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setCreating(true)
     try {
@@ -35,32 +37,32 @@ export default function InviteKeysPanel() {
       setSeatLimit('')
       fetchKeys()
     } catch (err) {
-      showBanner('error', err.message)
+      showBanner('error', (err as Error).message)
     }
     setCreating(false)
   }
 
-  async function handleRegenerate(key) {
+  async function handleRegenerate(key: InviteKey) {
     try {
       const data = await api.regenerateKey(key.id)
       showBanner('success', `New key for ${key.family_name}: ${data.secret_key}`)
       fetchKeys()
     } catch (err) {
-      showBanner('error', err.message)
+      showBanner('error', (err as Error).message)
     }
   }
 
-  async function handleDelete(id) {
+  async function handleDelete(id: string) {
     try {
       await api.deleteKey(id)
       fetchKeys()
     } catch (err) {
-      showBanner('error', err.message)
+      showBanner('error', (err as Error).message)
     }
     setConfirmDelete(null)
   }
 
-  function statusLabel(key) {
+  function statusLabel(key: InviteKey): { label: string; className: string } {
     if (!key.is_active) return { label: 'Revoked', className: 'text-red-500' }
     if (key.seats_used >= key.seat_limit) return { label: 'Exhausted', className: 'text-gray-400' }
     return { label: 'Active', className: 'text-green-500' }

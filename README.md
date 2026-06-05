@@ -70,8 +70,8 @@ A private wedding invitation web application built with React + Vite and Supabas
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | Vite + React.js |
-| Styling | Tailwind CSS |
+| Frontend | Vite + React.js (TypeScript) |
+| Styling | Tailwind CSS v4 |
 | Backend API | Express.js (Node.js) |
 | Auth | Supabase Auth (proxied through backend) |
 | Database | Supabase (PostgreSQL + RLS) |

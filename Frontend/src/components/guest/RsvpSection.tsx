@@ -1,9 +1,19 @@
 import { useState } from 'react'
-import { api } from '../../lib/api'
+import { api, InviteKey } from '../../lib/api'
 
 const MY_PHONE_REGEX = /^1[0-9]{8,9}$/
 
-function AttendeeRow({ index, value, onChange }) {
+type Attendee = { name: string; phone: string }
+
+function AttendeeRow({
+  index,
+  value,
+  onChange,
+}: {
+  index: number
+  value: Attendee
+  onChange: (updated: Attendee) => void
+}) {
   const phoneError =
     value.phone && !MY_PHONE_REGEX.test(value.phone)
       ? 'Enter a valid Malaysian mobile number (e.g. 123456789)'
@@ -48,16 +58,16 @@ function AttendeeRow({ index, value, onChange }) {
 export default function RsvpSection() {
   const [step, setStep] = useState(1)
   const [keyInput, setKeyInput] = useState('')
-  const [keyError, setKeyError] = useState(null)
+  const [keyError, setKeyError] = useState<string | null>(null)
   const [validating, setValidating] = useState(false)
-  const [inviteKey, setInviteKey] = useState(null) // full row from invite_keys
-  const [attendees, setAttendees] = useState([{ name: '', phone: '' }])
+  const [inviteKey, setInviteKey] = useState<InviteKey | null>(null)
+  const [attendees, setAttendees] = useState<Attendee[]>([{ name: '', phone: '' }])
   const [submitting, setSubmitting] = useState(false)
-  const [submitError, setSubmitError] = useState(null)
-  const [registered, setRegistered] = useState([])
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [registered, setRegistered] = useState<{ full_name: string }[]>([])
 
   // Step 1: validate key
-  async function handleValidateKey(e) {
+  async function handleValidateKey(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setKeyError(null)
     setValidating(true)
@@ -67,13 +77,13 @@ export default function RsvpSection() {
       setInviteKey(data)
       setStep(2)
     } catch (err) {
-      setKeyError(err.message)
+      setKeyError((err as Error).message)
     }
     setValidating(false)
   }
 
   // Step 2: submit RSVP
-  async function handleSubmitRsvp(e) {
+  async function handleSubmitRsvp(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setSubmitError(null)
 
@@ -91,11 +101,11 @@ export default function RsvpSection() {
     }))
 
     try {
-      await api.registerGuests(inviteKey.id, guests)
+      await api.registerGuests(inviteKey!.id, guests)
       setRegistered(guests.map((g) => ({ full_name: g.full_name })))
       setStep(3)
     } catch (err) {
-      setSubmitError(err.message)
+      setSubmitError((err as Error).message)
     }
     setSubmitting(false)
   }
