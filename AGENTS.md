@@ -14,10 +14,10 @@ A private wedding invitation web app. Guests view the invitation and RSVP using 
 
 | Layer | Technology | Folder |
 |-------|-----------|--------|
-| Frontend | Vite + React.js | `Frontend/` |
-| Routing | React Router v6 | `Frontend/src/App.jsx` |
-| Styling | Tailwind CSS | `Frontend/src/` |
-| API Client | `fetch`-based (`api.js`) | `Frontend/src/lib/api.js` |
+| Frontend | Vite + React.js (TypeScript) | `Frontend/` |
+| Routing | React Router v6 | `Frontend/src/App.tsx` |
+| Styling | Tailwind CSS v4 | `Frontend/src/` |
+| API Client | `fetch`-based (`api.ts`) | `Frontend/src/lib/api.ts` |
 | Auth | Supabase Auth (proxied through backend) | `Backend/src/routes/auth.js` |
 | Backend API | Express.js (Node.js) | `Backend/src/` |
 | Backend / Database | Supabase (PostgreSQL + RLS) + service role key | `Backend/` |
@@ -34,7 +34,8 @@ WeddingInvitation/
 │   ├── sprint-1/             # DB schema, routing, auth shells
 │   ├── sprint-2/             # Invite key UI, RSVP form
 │   ├── sprint-3/             # Invitation content editor
-│   └── sprint-4/             # Express backend API
+│   ├── sprint-4/             # Express backend API
+│   └── sprint-5/             # TypeScript migration + Tailwind v4 + shadcn prerequisites
 ├── .env.local                 # VITE_API_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (never commit)
 ├── .env.local.example
 ├── Backend/
@@ -51,23 +52,26 @@ WeddingInvitation/
 │   └── supabase/migrations/  # 001–005 SQL files (run once in Supabase SQL editor)
 └── Frontend/
     ├── Dockerfile
+    ├── tsconfig.json / tsconfig.app.json / tsconfig.node.json
+    ├── vite.config.ts
     └── src/
-        ├── App.jsx            # BrowserRouter + Routes
+        ├── App.tsx            # BrowserRouter + Routes
+        ├── vite-env.d.ts      # Vite env type declarations
         ├── lib/
-        │   ├── api.js             # ← ALL backend calls go through here only
-        │   └── keyUtils.js        # generateSecretKey() (now also in backend)
+        │   ├── api.ts             # ← ALL backend calls go through here only (typed)
+        │   └── keyUtils.ts        # generateSecretKey() (now also in backend)
         ├── pages/
-        │   ├── GuestPage.jsx
-        │   ├── AdminLoginPage.jsx
-        │   └── AdminDashboard.jsx
+        │   ├── GuestPage.tsx
+        │   ├── AdminLoginPage.tsx
+        │   └── AdminDashboard.tsx
         └── components/
-            ├── ProtectedRoute.jsx
+            ├── ProtectedRoute.tsx
             ├── admin/
-            │   ├── InviteKeysPanel.jsx
-            │   ├── RsvpsPanel.jsx
-            │   └── EditInvitationPanel.jsx
+            │   ├── InviteKeysPanel.tsx
+            │   ├── RsvpsPanel.tsx
+            │   └── EditInvitationPanel.tsx
             └── guest/
-                └── RsvpSection.jsx
+                └── RsvpSection.tsx
 ```
 
 ## Backend API (Express)
@@ -118,6 +122,7 @@ All sprints complete and verified end-to-end. App is fully functional locally, n
 | 2 | Invite key management UI, RSVP form with Malaysian phone validation | ✅ Done |
 | 3 | Invitation content editor (CMS-lite) in admin dashboard | ✅ Done |
 | 4 | Express backend API — frontend no longer calls Supabase directly | ✅ Done |
+| 5 | TypeScript migration + Tailwind v4 + `@` alias — shadcn/ui prerequisites | ✅ Done |
 
 **Next priorities** (see `PROJECT_BRIEF.md` section 8 for full backlog):
 1. Visual design polish (wedding aesthetic, fonts, animations)
@@ -129,14 +134,16 @@ All sprints complete and verified end-to-end. App is fully functional locally, n
 - Functional components only — no class components
 - Tailwind CSS utility classes — no inline styles
 - React Router `<Routes>` / `<Route>` — no `window.location` manipulation
-- All backend calls in `src/lib/api.js` only — never use `fetch` directly in components
+- All backend calls in `src/lib/api.ts` only — never use `fetch` directly in components
+- TypeScript strict mode — all components in `.tsx`, all modules in `.ts`
+- `@/*` path alias maps to `./src/*` — use for all internal imports (required for shadcn/ui)
 - Key generation happens server-side in `Backend/src/routes/admin.js`
 - Phone validation: `^1[0-9]{8,9}$` client-side display; server validates before storing as `+60XXXXXXXXX`
 - Admin JWT stored in `localStorage` (`wedding_admin_token` + `wedding_admin_email`); cleared on logout or 401
 
 ## Build & Dev
 
-> **Docker-first**: Docker Desktop is the only local dependency. Do **not** run `npm install` or `npm run dev` on the host.
+> **Docker-first**: Docker Desktop is the only dependency to **run** the app. Run `npm install` inside `Frontend/` only to get VS Code IntelliSense (does not affect the running containers).
 
 ```bash
 # First run or after package.json changes

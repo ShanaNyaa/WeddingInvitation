@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { api } from '../lib/api'
+import { api, InvitationContent } from '../lib/api'
 import RsvpSection from '../components/guest/RsvpSection'
 
 export default function GuestPage() {
-  const [content, setContent] = useState(null)
+  const [content, setContent] = useState<InvitationContent | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchContent() {
@@ -13,7 +13,7 @@ export default function GuestPage() {
         const data = await api.getInvitation()
         setContent(data)
       } catch (err) {
-        setError(err.message)
+        setError((err as Error).message)
       }
       setLoading(false)
     }
@@ -36,6 +36,8 @@ export default function GuestPage() {
       </div>
     )
   }
+
+  if (!content) return null
 
   return (
     <div className="min-h-screen bg-white px-6 py-12 max-w-2xl mx-auto space-y-8">

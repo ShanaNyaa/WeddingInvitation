@@ -17,7 +17,7 @@ A private wedding invitation web app. Guests view the invitation and RSVP using 
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | Vite + React.js (JSX) |
+| Frontend | Vite + React.js (TypeScript / TSX) |
 | Styling | Tailwind CSS |
 | API Client | `fetch`-based (`src/lib/api.js`) |
 | Backend API | Express.js (Node.js, port 8080) |
@@ -64,20 +64,21 @@ WeddingInvitation/
     ├── Dockerfile
     ├── package.json
     └── src/
-        ├── App.jsx             ← routing (BrowserRouter)
-        ├── main.jsx
+        ├── App.tsx             ← routing (BrowserRouter)
+        ├── main.tsx
         ├── index.css
+        ├── vite-env.d.ts       ← Vite env type declarations
         ├── lib/
-        │   ├── api.js          ← ALL backend calls go through here
-        │   └── keyUtils.js     ← generateSecretKey() (client-side, unused in prod flow)
+        │   ├── api.ts          ← ALL backend calls go through here (typed)
+        │   └── keyUtils.ts     ← generateSecretKey() (client-side, unused in prod flow)
         ├── pages/
-        │   ├── GuestPage.jsx
-        │   ├── AdminLoginPage.jsx
-        │   └── AdminDashboard.jsx
+        │   ├── GuestPage.tsx
+        │   ├── AdminLoginPage.tsx
+        │   └── AdminDashboard.tsx
         └── components/
-            ├── ProtectedRoute.jsx
+            ├── ProtectedRoute.tsx
             ├── admin/
-            │   ├── InviteKeysPanel.jsx
+            │   ├── InviteKeysPanel.tsx
             │   ├── RsvpsPanel.jsx
             │   └── EditInvitationPanel.jsx
             └── guest/
@@ -139,8 +140,10 @@ Atomic guest insert + seat counter increment. Raises `invalid_key` or `seats_exc
 
 ## 6. Key Conventions
 
-- All backend calls go through `src/lib/api.js` only — never `fetch` directly in components
+- All backend calls go through `src/lib/api.ts` only — never `fetch` directly in components
 - Frontend has zero Supabase dependency — no anon key exposed to the browser
+- TypeScript strict mode enabled; all components in `.tsx`, all modules in `.ts`
+- `@/*` path alias maps to `./src/*` — use for all internal imports when adding shadcn components
 - Key generation happens server-side in `Backend/src/routes/admin.js`
 - Functional components only — no class components
 - Tailwind utility classes — no inline styles
@@ -152,7 +155,7 @@ Atomic guest insert + seat counter increment. Raises `invalid_key` or `seats_exc
 
 ## 7. Current State (as of 2026-06-06)
 
-All three sprints complete and verified end-to-end. Backend API layer added.
+All sprints complete and verified end-to-end.
 
 | Sprint | Scope | Status |
 |--------|-------|--------|
@@ -160,6 +163,7 @@ All three sprints complete and verified end-to-end. Backend API layer added.
 | Sprint 2 | Invite key management UI, RSVP form (3-step with MY phone) | ✅ Done |
 | Sprint 3 | Invitation content editor (CMS-lite) in admin dashboard | ✅ Done |
 | Sprint 4 | Express backend API — frontend no longer calls Supabase directly | ✅ Done |
+| Sprint 5 | TypeScript migration + `@` path alias — prerequisite for shadcn/ui | ✅ Done |
 
 The app is fully functional locally. Not yet deployed to a public host.
 

@@ -5,12 +5,13 @@ import InviteKeysPanel from '../components/admin/InviteKeysPanel'
 import RsvpsPanel from '../components/admin/RsvpsPanel'
 import EditInvitationPanel from '../components/admin/EditInvitationPanel'
 
-const TABS = ['Invite Keys', 'RSVPs', 'Edit Invitation']
+const TABS = ['Invite Keys', 'RSVPs', 'Edit Invitation'] as const
+type Tab = typeof TABS[number]
 
 export default function AdminDashboard() {
   const navigate = useNavigate()
   const [userEmail] = useState(() => api.getEmail() || '')
-  const [activeTab, setActiveTab] = useState('Invite Keys')
+  const [activeTab, setActiveTab] = useState<Tab>('Invite Keys')
 
   async function handleLogout() {
     try { await api.logout() } catch (_) {}
