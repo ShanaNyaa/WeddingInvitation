@@ -1,17 +1,19 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
+import { useTheme } from '../hooks/useTheme'
 import InviteKeysPanel from '../components/admin/InviteKeysPanel'
 import RsvpsPanel from '../components/admin/RsvpsPanel'
 import EditInvitationPanel from '../components/admin/EditInvitationPanel'
-
-const TABS = ['Invite Keys', 'RSVPs', 'Edit Invitation'] as const
-type Tab = typeof TABS[number]
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Button } from '@/components/ui/button'
+import { Toaster } from '@/components/ui/sonner'
+import { LogOut, Sun, Moon } from 'lucide-react'
 
 export default function AdminDashboard() {
   const navigate = useNavigate()
   const [userEmail] = useState(() => api.getEmail() || '')
-  const [activeTab, setActiveTab] = useState<Tab>('Invite Keys')
+  const { theme, toggleTheme } = useTheme()
 
   async function handleLogout() {
     try { await api.logout() } catch (_) {}
@@ -20,43 +22,42 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
+      <Toaster />
+
       {/* Top bar */}
-      <header className="bg-white border-b px-6 py-4 flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gray-800">Admin Dashboard</h1>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-500">{userEmail}</span>
-          <button
-            onClick={handleLogout}
-            className="text-sm text-red-600 hover:underline"
-          >
+      <header className="border-b px-6 py-4 flex items-center justify-between">
+        <h1 className="text-lg font-semibold">Admin Dashboard</h1>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">{userEmail}</span>
+          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
+          <Button variant="ghost" size="sm" onClick={handleLogout}>
+            <LogOut className="h-4 w-4 mr-2" />
             Logout
-          </button>
+          </Button>
         </div>
       </header>
 
-      {/* Tab bar */}
-      <nav className="bg-white border-b px-6 flex gap-6">
-        {TABS.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`py-3 text-sm border-b-2 transition-colors ${
-              activeTab === tab
-                ? 'border-gray-800 text-gray-800 font-medium'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </nav>
-
       {/* Tab content */}
       <main className="px-6 py-8">
-        {activeTab === 'Invite Keys' && <InviteKeysPanel />}
-        {activeTab === 'RSVPs' && <RsvpsPanel />}
-        {activeTab === 'Edit Invitation' && <EditInvitationPanel />}
+        <Tabs defaultValue="invite-keys">
+          <TabsList className="mb-6">
+            <TabsTrigger value="invite-keys">Invite Keys</TabsTrigger>
+            <TabsTrigger value="rsvps">RSVPs</TabsTrigger>
+            <TabsTrigger value="edit-invitation">Edit Invitation</TabsTrigger>
+          </TabsList>
+          <TabsContent value="invite-keys">
+            <InviteKeysPanel />
+          </TabsContent>
+          <TabsContent value="rsvps">
+            <RsvpsPanel />
+          </TabsContent>
+          <TabsContent value="edit-invitation">
+            <EditInvitationPanel />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   )
