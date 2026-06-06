@@ -35,7 +35,8 @@ WeddingInvitation/
 │   ├── sprint-2/             # Invite key UI, RSVP form
 │   ├── sprint-3/             # Invitation content editor
 │   ├── sprint-4/             # Express backend API
-│   └── sprint-5/             # TypeScript migration + Tailwind v4 + shadcn prerequisites
+│   ├── sprint-5/             # TypeScript migration + Tailwind v4 + shadcn prerequisites
+│   └── sprint-6/             # shadcn/ui integration + dark/light theme toggle
 ├── .env.local                 # VITE_API_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (never commit)
 ├── .env.local.example
 ├── Backend/
@@ -52,11 +53,16 @@ WeddingInvitation/
 │   └── supabase/migrations/  # 001–005 SQL files (run once in Supabase SQL editor)
 └── Frontend/
     ├── Dockerfile
+    ├── index.html             # includes blocking script to apply dark class before React mounts
+    ├── components.json        # shadcn/ui config (style: radix-maia, base: mauve, CSS vars)
     ├── tsconfig.json / tsconfig.app.json / tsconfig.node.json
     ├── vite.config.ts
     └── src/
         ├── App.tsx            # BrowserRouter + Routes
+        ├── index.css          # Tailwind v4 + shadcn CSS variable theme tokens
         ├── vite-env.d.ts      # Vite env type declarations
+        ├── hooks/
+        │   └── useTheme.ts    # dark/light toggle — reads localStorage, toggles `dark` on <html>
         ├── lib/
         │   ├── api.ts             # ← ALL backend calls go through here only (typed)
         │   └── keyUtils.ts        # generateSecretKey() (now also in backend)
@@ -66,6 +72,9 @@ WeddingInvitation/
         │   └── AdminDashboard.tsx
         └── components/
             ├── ProtectedRoute.tsx
+            ├── ui/                # shadcn/ui primitives (auto-generated, do not hand-edit)
+            │   └── (button, input, label, card, badge, alert, alert-dialog,
+            │      table, tabs, textarea, separator, sonner)
             ├── admin/
             │   ├── InviteKeysPanel.tsx
             │   ├── RsvpsPanel.tsx
@@ -123,11 +132,12 @@ All sprints complete and verified end-to-end. App is fully functional locally, n
 | 3 | Invitation content editor (CMS-lite) in admin dashboard | ✅ Done |
 | 4 | Express backend API — frontend no longer calls Supabase directly | ✅ Done |
 | 5 | TypeScript migration + Tailwind v4 + `@` alias — shadcn/ui prerequisites | ✅ Done |
+| 6 | shadcn/ui integration (all panels converted) + dark/light theme toggle | ✅ Done |
 
 **Next priorities** (see `PROJECT_BRIEF.md` section 8 for full backlog):
-1. Visual design polish (wedding aesthetic, fonts, animations)
-2. Production deployment (Vercel/Netlify + live Supabase)
-3. Hero image upload to Supabase Storage
+1. Production deployment (Vercel/Netlify + live Supabase)
+2. Hero image upload to Supabase Storage
+3. Wedding aesthetic polish (custom fonts, animations)
 
 ## Code Style
 
