@@ -1,5 +1,10 @@
-import { ReactNode, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import { api } from '../../lib/api'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Button } from '@/components/ui/button'
 
 type FormState = {
   couple_names: string
@@ -11,8 +16,6 @@ type FormState = {
   hero_image_url: string
 }
 
-type Banner = { type: 'success' | 'error'; message: string }
-
 const EMPTY: FormState = {
   couple_names: '',
   event_date: '',
@@ -23,23 +26,10 @@ const EMPTY: FormState = {
   hero_image_url: '',
 }
 
-const inputClass =
-  'w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400'
-
-function Field({ label, children, className = '' }: { label: string; children: ReactNode; className?: string }) {
-  return (
-    <div className={className}>
-      <label className="block text-xs text-gray-500 uppercase tracking-wide mb-1">{label}</label>
-      {children}
-    </div>
-  )
-}
-
 export default function EditInvitationPanel() {
   const [form, setForm] = useState<FormState>(EMPTY)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [banner, setBanner] = useState<Banner | null>(null)
 
   useEffect(() => {
     async function fetchContent() {
@@ -64,11 +54,6 @@ export default function EditInvitationPanel() {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
-  function showBanner(type: Banner['type'], message: string) {
-    setBanner({ type, message })
-    setTimeout(() => setBanner(null), 5000)
-  }
-
   async function handleSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setSaving(true)
@@ -82,22 +67,22 @@ export default function EditInvitationPanel() {
         story_blurb: form.story_blurb.trim(),
         hero_image_url: form.hero_image_url.trim(),
       })
-      showBanner('success', 'Invitation updated successfully.')
+      toast.success('Invitation updated successfully.')
     } catch (err) {
-      showBanner('error', (err as Error).message)
+      toast.error((err as Error).message)
     }
     setSaving(false)
   }
 
   if (loading) {
-    return <p className="text-sm text-gray-400">Loading content…</p>
+    return <p className="text-sm text-muted-foreground">Loading content…</p>
   }
 
   return (
     <form onSubmit={handleSave} className="space-y-6 max-w-xl">
       {/* Hero image preview */}
       {form.hero_image_url && (
-        <div className="w-full rounded overflow-hidden border border-gray-200">
+        <div className="w-full rounded-lg overflow-hidden border">
           <img
             src={form.hero_image_url}
             alt="Hero preview"
@@ -107,95 +92,88 @@ export default function EditInvitationPanel() {
         </div>
       )}
 
-      <Field label="Hero Image URL">
-        <input
+      <div className="space-y-1">
+        <Label htmlFor="hero-image-url">Hero Image URL</Label>
+        <Input
+          id="hero-image-url"
           type="text"
           value={form.hero_image_url}
           onChange={(e) => set('hero_image_url', e.target.value)}
           placeholder="https://example.com/photo.jpg"
-          className={inputClass}
         />
-        <p className="text-xs text-gray-400 mt-1">Paste any public image URL. Preview updates live.</p>
-      </Field>
+        <p className="text-xs text-muted-foreground">Paste any public image URL. Preview updates live.</p>
+      </div>
 
-      <Field label="Couple Names">
-        <input
+      <div className="space-y-1">
+        <Label htmlFor="couple-names">Couple Names</Label>
+        <Input
+          id="couple-names"
           type="text"
           required
           value={form.couple_names}
           onChange={(e) => set('couple_names', e.target.value)}
           placeholder="e.g. Ali & Siti"
-          className={inputClass}
         />
-      </Field>
+      </div>
 
       <div className="flex gap-4">
-        <Field label="Event Date" className="flex-1">
-          <input
+        <div className="flex-1 space-y-1">
+          <Label htmlFor="event-date">Event Date</Label>
+          <Input
+            id="event-date"
             type="date"
             value={form.event_date}
             onChange={(e) => set('event_date', e.target.value)}
-            className={inputClass}
           />
-        </Field>
-        <Field label="Event Time" className="flex-1">
-          <input
+        </div>
+        <div className="flex-1 space-y-1">
+          <Label htmlFor="event-time">Event Time</Label>
+          <Input
+            id="event-time"
             type="text"
             value={form.event_time}
             onChange={(e) => set('event_time', e.target.value)}
             placeholder="e.g. 11:00 AM"
-            className={inputClass}
           />
-        </Field>
+        </div>
       </div>
 
-      <Field label="Venue Name">
-        <input
+      <div className="space-y-1">
+        <Label htmlFor="venue-name">Venue Name</Label>
+        <Input
+          id="venue-name"
           type="text"
           value={form.venue_name}
           onChange={(e) => set('venue_name', e.target.value)}
           placeholder="e.g. Dewan Serbaguna"
-          className={inputClass}
         />
-      </Field>
+      </div>
 
-      <Field label="Venue Address">
-        <textarea
+      <div className="space-y-1">
+        <Label htmlFor="venue-address">Venue Address</Label>
+        <Textarea
+          id="venue-address"
           rows={2}
           value={form.venue_address}
           onChange={(e) => set('venue_address', e.target.value)}
           placeholder="Full address"
-          className={inputClass}
         />
-      </Field>
+      </div>
 
-      <Field label="Our Story">
-        <textarea
+      <div className="space-y-1">
+        <Label htmlFor="story-blurb">Our Story</Label>
+        <Textarea
+          id="story-blurb"
           rows={4}
           value={form.story_blurb}
           onChange={(e) => set('story_blurb', e.target.value)}
           placeholder="A short paragraph about the couple…"
-          className={inputClass}
         />
-      </Field>
+      </div>
 
-      {banner && (
-        <div className={`rounded px-4 py-3 text-sm ${
-          banner.type === 'success'
-            ? 'bg-green-50 text-green-800 border border-green-200'
-            : 'bg-red-50 text-red-800 border border-red-200'
-        }`}>
-          {banner.message}
-        </div>
-      )}
-
-      <button
-        type="submit"
-        disabled={saving}
-        className="bg-gray-800 text-white text-sm px-5 py-2 rounded hover:bg-gray-700 disabled:opacity-50 transition-colors"
-      >
+      <Button type="submit" disabled={saving}>
         {saving ? 'Saving…' : 'Save Changes'}
-      </button>
+      </Button>
     </form>
   )
 }

@@ -18,8 +18,8 @@ A private wedding invitation web app. Guests view the invitation and RSVP using 
 | Layer | Technology |
 |-------|-----------|
 | Frontend | Vite + React.js (TypeScript / TSX) |
-| Styling | Tailwind CSS |
-| API Client | `fetch`-based (`src/lib/api.js`) |
+| Styling | Tailwind CSS v4 |
+| API Client | `fetch`-based (`src/lib/api.ts`) |
 | Backend API | Express.js (Node.js, port 8080) |
 | Auth | Supabase Auth (proxied through backend) |
 | Database | Supabase (PostgreSQL + RLS) + service role key |
@@ -39,7 +39,9 @@ WeddingInvitation/
 ├── docs/
 │   ├── sprint-1/             plan.md, progress.md
 │   ├── sprint-2/             plan.md, progress.md
-│   └── sprint-3/             plan.md, progress.md
+│   ├── sprint-3/             plan.md, progress.md
+│   ├── sprint-4/             plan.md, progress.md
+│   └── sprint-5/             plan.md, progress.md
 ├── .env.local                ← not committed, see .env.local.example
 ├── .env.local.example
 ├── Backend/
@@ -63,6 +65,10 @@ WeddingInvitation/
 └── Frontend/
     ├── Dockerfile
     ├── package.json
+    ├── tsconfig.json
+    ├── tsconfig.app.json
+    ├── tsconfig.node.json
+    ├── vite.config.ts
     └── src/
         ├── App.tsx             ← routing (BrowserRouter)
         ├── main.tsx
@@ -70,7 +76,7 @@ WeddingInvitation/
         ├── vite-env.d.ts       ← Vite env type declarations
         ├── lib/
         │   ├── api.ts          ← ALL backend calls go through here (typed)
-        │   └── keyUtils.ts     ← generateSecretKey() (client-side, unused in prod flow)
+        │   └── keyUtils.ts     ← generateSecretKey() (now also in backend)
         ├── pages/
         │   ├── GuestPage.tsx
         │   ├── AdminLoginPage.tsx
@@ -79,10 +85,10 @@ WeddingInvitation/
             ├── ProtectedRoute.tsx
             ├── admin/
             │   ├── InviteKeysPanel.tsx
-            │   ├── RsvpsPanel.jsx
-            │   └── EditInvitationPanel.jsx
+            │   ├── RsvpsPanel.tsx
+            │   └── EditInvitationPanel.tsx
             └── guest/
-                └── RsvpSection.jsx
+                └── RsvpSection.tsx
 ```
 
 ---

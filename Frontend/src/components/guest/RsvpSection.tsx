@@ -1,5 +1,10 @@
 import { useState } from 'react'
 import { api, InviteKey } from '../../lib/api'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Card, CardContent } from '@/components/ui/card'
 
 const MY_PHONE_REGEX = /^1[0-9]{8,9}$/
 
@@ -21,35 +26,32 @@ function AttendeeRow({
 
   return (
     <div className="flex gap-3 items-start">
-      <div className="flex-1">
-        <label className="block text-xs text-gray-500 mb-1">
-          Full Name {index === 0 ? '(you)' : ''}
-        </label>
-        <input
+      <div className="flex-1 space-y-1">
+        <Label>Full Name {index === 0 ? '(you)' : ''}</Label>
+        <Input
           type="text"
           required
           value={value.name}
           onChange={(e) => onChange({ ...value, name: e.target.value })}
           placeholder="Full name"
-          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
         />
       </div>
-      <div className="flex-1">
-        <label className="block text-xs text-gray-500 mb-1">Phone Number</label>
+      <div className="flex-1 space-y-1">
+        <Label>Phone Number</Label>
         <div className="flex">
-          <span className="inline-flex items-center px-3 border border-r-0 border-gray-300 rounded-l bg-gray-50 text-sm text-gray-500">
+          <span className="inline-flex items-center px-3 border border-r-0 border-input rounded-l bg-muted text-sm text-muted-foreground">
             +60
           </span>
-          <input
+          <Input
             type="tel"
             required
             value={value.phone}
             onChange={(e) => onChange({ ...value, phone: e.target.value.replace(/\D/g, '') })}
             placeholder="123456789"
-            className="flex-1 border border-gray-300 rounded-r px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+            className="rounded-l-none"
           />
         </div>
-        {phoneError && <p className="text-xs text-red-500 mt-1">{phoneError}</p>}
+        {phoneError && <p className="text-xs text-destructive mt-1">{phoneError}</p>}
       </div>
     </div>
   )
@@ -114,39 +116,39 @@ export default function RsvpSection() {
 
   return (
     <section className="border-t pt-8">
-      <p className="text-xs uppercase tracking-widest text-gray-400 mb-4">RSVP</p>
+      <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">RSVP</p>
 
       {/* Step 1 — Key entry */}
       {step === 1 && (
         <form onSubmit={handleValidateKey} className="space-y-4 max-w-sm">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             Enter the invite key you received to register your attendance.
           </p>
-          <div>
-            <input
+          <div className="space-y-2">
+            <Input
               type="text"
               required
               value={keyInput}
               onChange={(e) => setKeyInput(e.target.value)}
               placeholder="e.g. FAM-X7K2"
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-gray-400 uppercase"
+              className="font-mono tracking-widest uppercase"
             />
-            {keyError && <p className="text-xs text-red-500 mt-1">{keyError}</p>}
+            {keyError && (
+              <Alert variant="destructive">
+                <AlertDescription>{keyError}</AlertDescription>
+              </Alert>
+            )}
           </div>
-          <button
-            type="submit"
-            disabled={validating}
-            className="bg-gray-800 text-white text-sm px-5 py-2 rounded hover:bg-gray-700 disabled:opacity-50 transition-colors"
-          >
+          <Button type="submit" disabled={validating}>
             {validating ? 'Checking…' : 'Verify Key'}
-          </button>
+          </Button>
         </form>
       )}
 
       {/* Step 2 — Attendee form */}
       {step === 2 && inviteKey && (
         <form onSubmit={handleSubmitRsvp} className="space-y-5 max-w-lg">
-          <div className="bg-gray-50 border rounded px-4 py-3 text-sm text-gray-700">
+          <div className="bg-muted border rounded px-4 py-3 text-sm">
             Registering under <span className="font-semibold">{inviteKey.family_name}</span>
             {' '}— <span className="font-semibold">{seatsRemaining}</span> seat{seatsRemaining !== 1 ? 's' : ''} remaining
           </div>
@@ -166,7 +168,7 @@ export default function RsvpSection() {
                 <button
                   type="button"
                   onClick={() => setAttendees(attendees.filter((_, idx) => idx !== i))}
-                  className="text-xs text-red-500 hover:underline mt-1"
+                  className="text-xs text-destructive hover:underline mt-1"
                 >
                   Remove
                 </button>
@@ -175,41 +177,44 @@ export default function RsvpSection() {
           ))}
 
           {attendees.length < seatsRemaining && (
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={() => setAttendees([...attendees, { name: '', phone: '' }])}
-              className="text-sm text-blue-600 hover:underline"
             >
               + Add another person
-            </button>
+            </Button>
           )}
 
-          {submitError && <p className="text-sm text-red-500">{submitError}</p>}
+          {submitError && (
+            <Alert variant="destructive">
+              <AlertDescription>{submitError}</AlertDescription>
+            </Alert>
+          )}
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="bg-gray-800 text-white text-sm px-5 py-2 rounded hover:bg-gray-700 disabled:opacity-50 transition-colors"
-          >
+          <Button type="submit" disabled={submitting}>
             {submitting ? 'Confirming…' : 'Confirm RSVP'}
-          </button>
+          </Button>
         </form>
       )}
 
       {/* Step 3 — Confirmation */}
       {step === 3 && (
-        <div className="space-y-4 max-w-sm">
-          <p className="text-lg text-gray-800">You're on the list! 🎉</p>
-          <p className="text-sm text-gray-500">We look forward to celebrating with you.</p>
-          <ul className="text-sm text-gray-700 space-y-1">
-            {registered.map((g, i) => (
-              <li key={i} className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
-                {g.full_name}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Card className="max-w-sm">
+          <CardContent className="pt-6 space-y-4">
+            <p className="text-lg">You're on the list! 🎉</p>
+            <p className="text-sm text-muted-foreground">We look forward to celebrating with you.</p>
+            <ul className="text-sm space-y-1">
+              {registered.map((g, i) => (
+                <li key={i} className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
+                  {g.full_name}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
       )}
     </section>
   )
