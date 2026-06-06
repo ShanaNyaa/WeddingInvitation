@@ -66,12 +66,22 @@ A private wedding invitation web application built with React + Vite and Supabas
 
 ---
 
+### Dark Mode
+
+- Both the guest page and admin dashboard support **dark and light themes**.
+- A toggle button (Sun / Moon icon) appears in the top-right corner of each page.
+- The selected theme is persisted to `localStorage` and applied before React mounts (no flash of unstyled content).
+- On first visit the system preference (`prefers-color-scheme`) is used as the default.
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
 | Frontend | Vite + React.js (TypeScript) |
 | Styling | Tailwind CSS v4 |
+| UI Components | shadcn/ui (radix-maia style, mauve base, CSS variables) |
 | Backend API | Express.js (Node.js) |
 | Auth | Supabase Auth (proxied through backend) |
 | Database | Supabase (PostgreSQL + RLS) |

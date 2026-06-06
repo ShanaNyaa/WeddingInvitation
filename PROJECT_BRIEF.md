@@ -41,7 +41,8 @@ WeddingInvitation/
 │   ├── sprint-2/             plan.md, progress.md
 │   ├── sprint-3/             plan.md, progress.md
 │   ├── sprint-4/             plan.md, progress.md
-│   └── sprint-5/             plan.md, progress.md
+│   ├── sprint-5/             plan.md, progress.md
+│   └── sprint-6/             plan.md, progress.md
 ├── .env.local                ← not committed, see .env.local.example
 ├── .env.local.example
 ├── Backend/
@@ -65,6 +66,8 @@ WeddingInvitation/
 └── Frontend/
     ├── Dockerfile
     ├── package.json
+    ├── index.html              ← blocking script applies dark class before React mounts
+    ├── components.json         ← shadcn/ui config (style: radix-maia, base: mauve, CSS vars)
     ├── tsconfig.json
     ├── tsconfig.app.json
     ├── tsconfig.node.json
@@ -72,8 +75,10 @@ WeddingInvitation/
     └── src/
         ├── App.tsx             ← routing (BrowserRouter)
         ├── main.tsx
-        ├── index.css
+        ├── index.css           ← Tailwind v4 + shadcn CSS variable theme tokens
         ├── vite-env.d.ts       ← Vite env type declarations
+        ├── hooks/
+        │   └── useTheme.ts     ← dark/light toggle, reads localStorage, toggles `dark` on <html>
         ├── lib/
         │   ├── api.ts          ← ALL backend calls go through here (typed)
         │   └── keyUtils.ts     ← generateSecretKey() (now also in backend)
@@ -83,6 +88,9 @@ WeddingInvitation/
         │   └── AdminDashboard.tsx
         └── components/
             ├── ProtectedRoute.tsx
+            ├── ui/             ← shadcn/ui primitives (auto-generated, do not hand-edit)
+            │   └── (button, input, label, card, badge, alert, alert-dialog,
+            │      table, tabs, textarea, separator, sonner)
             ├── admin/
             │   ├── InviteKeysPanel.tsx
             │   ├── RsvpsPanel.tsx
@@ -156,6 +164,7 @@ Atomic guest insert + seat counter increment. Raises `invalid_key` or `seats_exc
 - Phone validation regex: `^1[0-9]{8,9}$` (client-side display; server stores as `+60XXXXXXXXX`)
 - Admin JWT stored in `localStorage` (`wedding_admin_token` + `wedding_admin_email`); cleared on logout or 401
 - Admin account created once via Supabase dashboard → Authentication → Users
+- Dark/light theme toggle on both guest page and admin dashboard; preference stored in `localStorage` (`wedding_theme`); `useTheme.ts` hook manages state; `index.html` blocking script prevents FOUC
 
 ---
 
@@ -170,6 +179,7 @@ All sprints complete and verified end-to-end.
 | Sprint 3 | Invitation content editor (CMS-lite) in admin dashboard | ✅ Done |
 | Sprint 4 | Express backend API — frontend no longer calls Supabase directly | ✅ Done |
 | Sprint 5 | TypeScript migration + `@` path alias — prerequisite for shadcn/ui | ✅ Done |
+| Sprint 6 | shadcn/ui integration (all panels) + dark/light theme toggle | ✅ Done |
 
 The app is fully functional locally. Not yet deployed to a public host.
 
@@ -182,7 +192,7 @@ Rough priority order — none committed yet:
 | # | Enhancement | Notes |
 |---|-------------|-------|
 | A | **Production deployment** | Deploy frontend (Vercel/Netlify) + backend (Railway/Render/Fly.io); point to live Supabase project |
-| B | **Visual design polish** | Replace placeholder layout with a proper wedding aesthetic (fonts, colours, animations) |
+| B | **Wedding aesthetic polish** | Custom fonts, hero animations, colour palette — shadcn/ui primitives are in place as the foundation |
 | C | **Hero image upload** | Replace URL input with direct file upload to Supabase Storage |
 | D | **WhatsApp share button** | One-tap share of invite key + invitation link for each family row |
 | E | **RSVP edit / cancellation** | Allow guests to update or cancel registration before a cutoff date |
