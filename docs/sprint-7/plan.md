@@ -98,10 +98,20 @@ Note: append `T00:00:00` before constructing the `Date` to prevent timezone offs
 
 Visual upgrades to the invitation body (below the hero):
 
-1. **Decorative ornament** — Add a small centred ornament between the hero and the first section. Use a Unicode character (`✦` or `❧`) or a thin CSS rule with dots — no image asset required.
+1. **Decorative ornament** — Add a small centred ornament between the hero and the first section. Two options:
+   - **Unicode character** (`✦` or `❧`) centred in a `<p>` — no component needed.
+   - **Separator line** — use the already-installed shadcn `<Separator>` component rather than a hand-rolled CSS rule: `<Separator className="my-6" />`.
+   Do NOT write a custom CSS rule when `<Separator>` is already available.
 2. **Section heading style** — Apply `font-heading` (Playfair Display) to each section label (Date & Time, Venue, Our Story, RSVP). Increase label size from `text-xs` to `text-sm`. Remove all-caps (`uppercase`) — sentence case reads more elegantly.
 3. **Generous spacing** — Increase vertical rhythm: `space-y-10` instead of `space-y-8`. Add more breathing room (`py-16`) on the outer container.
-4. **RSVP section visual lift** — Wrap `RsvpSection` in a subtle bordered card (`border rounded-lg p-6 bg-card`) to visually separate it from the invitation text above.
+4. **RSVP section visual lift** — Wrap `RsvpSection` in the already-installed shadcn `<Card>` + `<CardContent>` primitive to visually separate it from the invitation text above. Do NOT use raw `border rounded-lg p-6 bg-card` utility classes — use the component for consistency:
+   ```tsx
+   <Card>
+     <CardContent className="p-6">
+       <RsvpSection … />
+     </CardContent>
+   </Card>
+   ```
 5. **Max-width on desktop** — Keep `max-w-2xl` centred on desktop but add `sm:px-0 px-5` so mobile has tighter padding.
 
 **Success criteria:**
