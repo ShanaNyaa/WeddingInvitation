@@ -29,7 +29,7 @@ export default function AdminDashboard() {
       <header className="border-b px-6 py-4 flex items-center justify-between">
         <h1 className="text-lg font-semibold">Admin Dashboard</h1>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">{userEmail}</span>
+          <span className="hidden sm:inline text-sm text-muted-foreground">{userEmail}</span>
           <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
@@ -43,7 +43,7 @@ export default function AdminDashboard() {
       {/* Tab content */}
       <main className="px-6 py-8">
         <Tabs defaultValue="invite-keys">
-          <TabsList className="mb-6">
+          <TabsList className="mb-6 w-full overflow-x-auto">
             <TabsTrigger value="invite-keys">Invite Keys</TabsTrigger>
             <TabsTrigger value="rsvps">RSVPs</TabsTrigger>
             <TabsTrigger value="edit-invitation">Edit Invitation</TabsTrigger>

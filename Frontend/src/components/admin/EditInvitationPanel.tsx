@@ -79,14 +79,14 @@ export default function EditInvitationPanel() {
   }
 
   return (
-    <form onSubmit={handleSave} className="space-y-6 max-w-xl">
-      {/* Hero image preview */}
+    <form onSubmit={handleSave} className="space-y-6">
+      {/* Hero image preview — full width */}
       {form.hero_image_url && (
         <div className="w-full rounded-lg overflow-hidden border">
           <img
             src={form.hero_image_url}
             alt="Hero preview"
-            className="w-full max-h-60 object-cover"
+            className="w-full max-h-96 object-contain bg-muted"
             onError={(e) => { e.currentTarget.style.display = 'none' }}
           />
         </div>
@@ -104,71 +104,80 @@ export default function EditInvitationPanel() {
         <p className="text-xs text-muted-foreground">Paste any public image URL. Preview updates live.</p>
       </div>
 
-      <div className="space-y-1">
-        <Label htmlFor="couple-names">Couple Names</Label>
-        <Input
-          id="couple-names"
-          type="text"
-          required
-          value={form.couple_names}
-          onChange={(e) => set('couple_names', e.target.value)}
-          placeholder="e.g. Ali & Siti"
-        />
-      </div>
+      {/* Two-column grid on desktop */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left column */}
+        <div className="space-y-6">
+          <div className="space-y-1">
+            <Label htmlFor="couple-names">Couple Names</Label>
+            <Input
+              id="couple-names"
+              type="text"
+              required
+              value={form.couple_names}
+              onChange={(e) => set('couple_names', e.target.value)}
+              placeholder="e.g. Ali & Siti"
+            />
+          </div>
 
-      <div className="flex gap-4">
-        <div className="flex-1 space-y-1">
-          <Label htmlFor="event-date">Event Date</Label>
-          <Input
-            id="event-date"
-            type="date"
-            value={form.event_date}
-            onChange={(e) => set('event_date', e.target.value)}
-          />
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1 space-y-1">
+              <Label htmlFor="event-date">Event Date</Label>
+              <Input
+                id="event-date"
+                type="date"
+                value={form.event_date}
+                onChange={(e) => set('event_date', e.target.value)}
+              />
+            </div>
+            <div className="flex-1 space-y-1">
+              <Label htmlFor="event-time">Event Time</Label>
+              <Input
+                id="event-time"
+                type="text"
+                value={form.event_time}
+                onChange={(e) => set('event_time', e.target.value)}
+                placeholder="e.g. 11:00 AM"
+              />
+            </div>
+          </div>
         </div>
-        <div className="flex-1 space-y-1">
-          <Label htmlFor="event-time">Event Time</Label>
-          <Input
-            id="event-time"
-            type="text"
-            value={form.event_time}
-            onChange={(e) => set('event_time', e.target.value)}
-            placeholder="e.g. 11:00 AM"
-          />
+
+        {/* Right column */}
+        <div className="space-y-6">
+          <div className="space-y-1">
+            <Label htmlFor="venue-name">Venue Name</Label>
+            <Input
+              id="venue-name"
+              type="text"
+              value={form.venue_name}
+              onChange={(e) => set('venue_name', e.target.value)}
+              placeholder="e.g. Dewan Serbaguna"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="venue-address">Venue Address</Label>
+            <Textarea
+              id="venue-address"
+              rows={2}
+              value={form.venue_address}
+              onChange={(e) => set('venue_address', e.target.value)}
+              placeholder="Full address"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="story-blurb">Our Story</Label>
+            <Textarea
+              id="story-blurb"
+              rows={4}
+              value={form.story_blurb}
+              onChange={(e) => set('story_blurb', e.target.value)}
+              placeholder="A short paragraph about the couple…"
+            />
+          </div>
         </div>
-      </div>
-
-      <div className="space-y-1">
-        <Label htmlFor="venue-name">Venue Name</Label>
-        <Input
-          id="venue-name"
-          type="text"
-          value={form.venue_name}
-          onChange={(e) => set('venue_name', e.target.value)}
-          placeholder="e.g. Dewan Serbaguna"
-        />
-      </div>
-
-      <div className="space-y-1">
-        <Label htmlFor="venue-address">Venue Address</Label>
-        <Textarea
-          id="venue-address"
-          rows={2}
-          value={form.venue_address}
-          onChange={(e) => set('venue_address', e.target.value)}
-          placeholder="Full address"
-        />
-      </div>
-
-      <div className="space-y-1">
-        <Label htmlFor="story-blurb">Our Story</Label>
-        <Textarea
-          id="story-blurb"
-          rows={4}
-          value={form.story_blurb}
-          onChange={(e) => set('story_blurb', e.target.value)}
-          placeholder="A short paragraph about the couple…"
-        />
       </div>
 
       <Button type="submit" disabled={saving}>

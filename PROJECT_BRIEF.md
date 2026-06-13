@@ -1,7 +1,7 @@
 # PROJECT_BRIEF.md — WeddingInvitation
 
 > Single source of truth. Update this file at the end of every session.
-> Last updated: 2026-06-06
+> Last updated: 2026-06-14
 
 ---
 
@@ -42,7 +42,8 @@ WeddingInvitation/
 │   ├── sprint-3/             plan.md, progress.md
 │   ├── sprint-4/             plan.md, progress.md
 │   ├── sprint-5/             plan.md, progress.md
-│   └── sprint-6/             plan.md, progress.md
+│   ├── sprint-6/             plan.md, progress.md
+│   └── sprint-7/             plan.md, progress.md
 ├── .env.local                ← not committed, see .env.local.example
 ├── .env.local.example
 ├── Backend/
@@ -168,7 +169,7 @@ Atomic guest insert + seat counter increment. Raises `invalid_key` or `seats_exc
 
 ---
 
-## 7. Current State (as of 2026-06-06)
+## 7. Current State (as of 2026-06-14)
 
 All sprints complete and verified end-to-end.
 
@@ -180,8 +181,21 @@ All sprints complete and verified end-to-end.
 | Sprint 4 | Express backend API — frontend no longer calls Supabase directly | ✅ Done |
 | Sprint 5 | TypeScript migration + `@` path alias — prerequisite for shadcn/ui | ✅ Done |
 | Sprint 6 | shadcn/ui integration (all panels) + dark/light theme toggle | ✅ Done |
+| Sprint 7 | UI modernisation + responsive design — hero redesign, mobile layout, admin panel polish | ✅ Done |
 
 The app is fully functional locally. Not yet deployed to a public host.
+
+**Sprint 7 key changes:**
+- Full-bleed hero with `bg-gradient-to-t` overlay; couple name (`font-light tracking-wide`) + formatted date rendered on top
+- Human-readable date formatting (`Saturday, 5 September 2026`) via `Intl.DateTimeFormat('en-MY')` with KL timezone
+- Decorative ✦ ornament + `space-y-10 py-16` generous spacing; RSVP wrapped in shadcn `Card`
+- CSS `fadeInUp` entrance animations with staggered delays; respects `prefers-reduced-motion`
+- RSVP attendee row stacks vertically on 375px (`flex-col sm:flex-row`)
+- Google Fonts (Great Vibes, Playfair Display) trialled and removed — Figtree used throughout
+- Admin: header email `hidden sm:inline`; `TabsList` full-width scrollable
+- Admin Invite Keys panel: shadcn `Card`-based; inline form row on desktop
+- Admin RSVPs panel: two stat cards in `grid grid-cols-2` (centered, short labels); family groups as individual `Card` components
+- Admin Edit Invitation: two-column grid on desktop (`lg:grid-cols-2`); hero preview `max-h-96 object-contain`
 
 ---
 
@@ -192,15 +206,14 @@ Rough priority order — none committed yet:
 | # | Enhancement | Notes |
 |---|-------------|-------|
 | A | **Production deployment** | Deploy frontend (Vercel/Netlify) + backend (Railway/Render/Fly.io); point to live Supabase project |
-| B | **Wedding aesthetic polish** | Custom fonts, hero animations, colour palette — shadcn/ui primitives are in place as the foundation |
-| C | **Hero image upload** | Replace URL input with direct file upload to Supabase Storage |
-| D | **WhatsApp share button** | One-tap share of invite key + invitation link for each family row |
-| E | **RSVP edit / cancellation** | Allow guests to update or cancel registration before a cutoff date |
-| F | **Admin export** | Download full RSVP list as CSV |
-| G | **Multiple events** | Support more than one wedding event (e.g. nikah + reception) with separate RSVP flows |
-| H | **Dietary / notes field** | Add optional dietary preference or notes field to RSVP form |
-| I | **Email confirmation** | Send guest a confirmation email via Supabase Edge Function + Resend |
-| J | **Seat count on guest page** | Show "X people coming so far" social proof counter on the invitation page |
+| B | **Hero image upload** | Replace URL input with direct file upload to Supabase Storage |
+| C | **WhatsApp share button** | One-tap share of invite key + invitation link for each family row |
+| D | **RSVP edit / cancellation** | Allow guests to update or cancel registration before a cutoff date |
+| E | **Admin export** | Download full RSVP list as CSV |
+| F | **Multiple events** | Support more than one wedding event (e.g. nikah + reception) with separate RSVP flows |
+| G | **Dietary / notes field** | Add optional dietary preference or notes field to RSVP form |
+| H | **Email confirmation** | Send guest a confirmation email via Supabase Edge Function + Resend |
+| I | **Seat count on guest page** | Show "X people coming so far" social proof counter on the invitation page |
 
 ---
 

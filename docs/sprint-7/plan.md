@@ -31,22 +31,9 @@ Current state (post Sprint 6):
 ### T1 — Wedding Typography (Google Fonts)
 **Files:** `Frontend/index.html`, `Frontend/src/index.css`
 
-Import two Google Fonts via `<link>` in `index.html`:
-- **`Great Vibes`** — cursive/script, used for the couple name only
-- **`Playfair Display`** — elegant serif, used for section headings (`h2`, `.font-heading`) and the `<h1>` couple name fallback
+> ~~Implemented and then removed~~ — Google Fonts (Great Vibes + Playfair Display) were added and subsequently removed. The app uses the existing Figtree variable font throughout.
 
-Add Tailwind CSS custom font utilities in `index.css`:
-```css
-/* inside @layer base or @theme */
---font-script: 'Great Vibes', cursive;
---font-heading: 'Playfair Display', serif;
-```
-Expose as Tailwind utilities (`font-script`, `font-heading`) so they can be applied with class names.
-
-**Success criteria:**
-- Couple name renders in `Great Vibes` script font on both guest page and Edit Invitation preview.
-- Section headings (Date & Time, Venue, Our Story) render in `Playfair Display`.
-- No layout shift or FOUT on load (fonts are loaded in `<head>` blocking-style).
+**Current state:** No custom Google Fonts. `--font-heading` resolves to `var(--font-sans)` (Figtree). Section labels use `text-sm text-muted-foreground`. Couple name uses `font-light tracking-wide`.
 
 ---
 
@@ -112,11 +99,32 @@ Visual upgrades to the invitation body (below the hero):
      </CardContent>
    </Card>
    ```
-5. **Max-width on desktop** — Keep `max-w-2xl` centred on desktop but add `sm:px-0 px-5` so mobile has tighter padding.
+5. **Max-width on desktop** — Keep `max-w-2xl` centred on desktop but add `sm:px-0 px-5` so mobile has tighter padding. The ~300px of blank space on either side at 1280px is **intentional** — this is the wedding invitation card aesthetic. Do not widen the content column.
 
 **Success criteria:**
 - Page looks like a printed invitation card when scrolled on a phone.
 - No layout shifts between mobile/desktop.
+
+---
+
+### T4b — Guest RSVP: Responsive Attendee Row
+**Files:** `Frontend/src/components/guest/RsvpSection.tsx`
+
+`AttendeeRow` currently uses `flex gap-3 items-start` — placing Full Name and Phone Number side by side on **all** screen sizes. On a 375px screen both fields are ~160px wide; the Phone field is even tighter because of the `+60` prefix. This is the most-used mobile interaction on the entire site and it is the most broken at 375px.
+
+Change the row layout to stack vertically on mobile:
+```tsx
+// Before
+<div className="flex gap-3 items-start">
+
+// After
+<div className="flex flex-col sm:flex-row gap-3 items-start">
+```
+
+**Success criteria:**
+- On 375px, Name field and Phone field each occupy full width, stacked vertically.
+- On 640px+, they sit side by side as before.
+- The `+60` prefix and phone input remain on the same row at all breakpoints (they are inside a single `flex` div that is not changed).
 
 ---
 
@@ -149,6 +157,25 @@ Apply staggered delays to each section:
 
 ---
 
+### T5b — Admin Edit Form: Responsive Date + Time Row
+**Files:** `Frontend/src/components/admin/EditInvitationPanel.tsx`
+
+The Event Date and Event Time inputs sit in a `flex gap-4` row at all screen sizes. On 375px, a native date picker and a text input side by side are uncomfortably narrow.
+
+```tsx
+// Before
+<div className="flex gap-4">
+
+// After
+<div className="flex flex-col sm:flex-row gap-4">
+```
+
+**Success criteria:**
+- On 375px, Date and Time inputs each occupy full width, stacked.
+- On 640px+, they sit side by side as before.
+
+---
+
 ### T6 — Admin Dashboard: Responsive Header
 **Files:** `Frontend/src/pages/AdminDashboard.tsx`
 
@@ -168,15 +195,19 @@ Changes:
 ### T7 — Admin Dashboard: Responsive Tables
 **Files:** `Frontend/src/components/admin/InviteKeysPanel.tsx`, `Frontend/src/components/admin/RsvpsPanel.tsx`
 
-Wrap each `<Table>` (the shadcn `<Table>` component) in an `overflow-x-auto` `<div>`. This is the standard pattern for responsive tables without restructuring the table markup.
+**InviteKeysPanel** — the table wrapper already has `overflow-x-auto rounded-lg border`. Verify this is in place and do not double-wrap. No change needed unless it was removed.
+
+**RsvpsPanel** — the per-family group container uses `overflow-hidden`, which **clips** table content instead of scrolling it. Replace `overflow-hidden` with `overflow-x-auto` on each family group wrapper:
 
 ```tsx
-<div className="overflow-x-auto rounded-lg border">
-  <Table>…</Table>
-</div>
+// Before
+<div className="border rounded-lg overflow-hidden bg-card">
+
+// After
+<div className="border rounded-lg overflow-x-auto bg-card">
 ```
 
-Also: on `RsvpsPanel`, the inner guest table per family group should get the same treatment.
+The inner `<Table>` does not need an additional wrapper — the fix is on the existing container.
 
 **Success criteria:**
 - On a 375px viewport, both tables are horizontally scrollable — no content is clipped.
@@ -209,7 +240,9 @@ Or make each trigger shrink equally with `flex-1` on the triggers if all three f
 | P0 | T3 — Date formatting | Fixes an obvious UX problem | Very low |
 | P1 | T2 — Hero redesign | Biggest visual transformation | Medium |
 | P1 | T4 — Invitation layout polish | Brings the page together | Low-medium |
+| P1 | T4b — RSVP attendee row stacking | Critical UX fix — most-used mobile flow | Very low |
 | P2 | T7 — Admin responsive tables | Functional fix for mobile admin | Low |
+| P2 | T5b — Admin edit date/time row | Functional fix for mobile admin | Very low |
 | P2 | T6 — Admin responsive header | Functional fix for mobile admin | Very low |
 | P2 | T8 — Admin responsive tabs | Functional fix for mobile admin | Very low |
 | P3 | T5 — Entrance animations | Delight detail | Low |
@@ -230,17 +263,18 @@ Test on four viewport widths using browser DevTools device simulation:
 | 1280px | Desktop |
 
 **Checklist per viewport:**
-- [ ] Guest page hero displays correctly (no overflow, correct aspect ratio)
-- [ ] Couple name renders in `Great Vibes` script
-- [ ] Date shows in human-readable format (`Saturday, 5 September 2026`)
-- [ ] All guest page sections visible with no horizontal overflow
-- [ ] RSVP 3-step flow fully operable (enter key → confirm guests → done)
-- [ ] Entrance animations play on first load; respect `prefers-reduced-motion`
-- [ ] Admin header fits on 375px (email hidden)
-- [ ] Admin tabs accessible on 375px
-- [ ] Invite Keys table horizontally scrollable on 375px
-- [ ] RSVPs table horizontally scrollable on 375px
-- [ ] Light mode checked — all text readable on light background
+- [x] Guest page hero displays correctly (no overflow, correct aspect ratio)
+- [x] Couple name renders with `font-light tracking-wide` (Google Fonts removed)
+- [x] Date shows in human-readable format (`Saturday, 5 September 2026`)
+- [x] All guest page sections visible with no horizontal overflow
+- [x] RSVP attendee row stacks vertically on 375px (name + phone each full width)
+- [x] RSVP 3-step flow fully operable (enter key → confirm guests → done)
+- [x] Entrance animations play on first load; respect `prefers-reduced-motion`
+- [x] Admin header fits on 375px (email hidden)
+- [x] Admin tabs accessible on 375px
+- [x] Invite Keys table horizontally scrollable on 375px
+- [x] RSVPs table horizontally scrollable on 375px
+- [x] Light mode checked — all text readable on light background
 
 **Edge cases:**
 - Hero image with a very tall portrait aspect ratio (e.g. 1:2) — `object-cover` + `aspect-[4/3]` should crop it, not stretch.
@@ -251,9 +285,9 @@ Test on four viewport widths using browser DevTools device simulation:
 
 ## Definition of Done
 
-- [ ] All 8 tasks implemented and committed.
-- [ ] No TypeScript errors (`tsc --noEmit` passes).
-- [ ] No Tailwind class errors.
-- [ ] QA checklist above fully green.
-- [ ] `docs/sprint-7/progress.md` updated with final status.
-- [ ] `PROJECT_BRIEF.md` sections 7 and 8 updated.
+- [x] All 10 tasks implemented and committed.
+- [x] No TypeScript errors (`tsc --noEmit` passes).
+- [x] No Tailwind class errors.
+- [x] QA checklist above fully green.
+- [x] `docs/sprint-7/progress.md` updated with final status.
+- [x] `PROJECT_BRIEF.md` sections 7 and 8 updated.
