@@ -25,7 +25,7 @@ function AttendeeRow({
       : null
 
   return (
-    <div className="flex gap-3 items-start">
+    <div className="flex flex-col sm:flex-row gap-3 items-start">
       <div className="flex-1 space-y-1">
         <Label>Full Name {index === 0 ? '(you)' : ''}</Label>
         <Input
@@ -115,8 +115,8 @@ export default function RsvpSection() {
   const seatsRemaining = inviteKey ? inviteKey.seats_remaining : 0
 
   return (
-    <section className="border-t pt-8">
-      <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">RSVP</p>
+    <section>
+      <p className="text-sm text-muted-foreground mb-4">RSVP</p>
 
       {/* Step 1 — Key entry */}
       {step === 1 && (
